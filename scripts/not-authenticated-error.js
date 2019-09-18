@@ -3,6 +3,7 @@
 var NotAuthenticatedError = function (message) {
   this.name = 'NotAuthenticatedError';
   this.message = message;
+  this.statusCode = 401 //fork
 };
 
 NotAuthenticatedError.prototype = Object.create(Error.prototype);

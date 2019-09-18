@@ -54,9 +54,14 @@ EnhancedRequest.prototype._getStatusCode = function (body) {
   case 'not_found':
     return 404;
   }
-
+  console.log(body) //fork
   if (body.reason && body.reason.indexOf('Could not open source database') !== -1) {
     return 404;
+  }
+};
+EnhancedRequest.prototype._getReason = function (body) { //fork
+  if (body.reason) {
+    return body.reason;
   }
 };
 
@@ -85,7 +90,7 @@ EnhancedRequest.prototype._newError = function (body, args) {
   }
   err.statusCode = this._getStatusCode(body);
   err.error = body.error;
-
+  err.reason = this._getReason(body); //fork
   return err;
 };
 
