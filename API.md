@@ -1,12 +1,12 @@
 ## API Reference
 
  * attachment
-   * get(dbName, docId, attachmentName)
-   * destroy(dbName, docId, attachmentName, rev)
+   * get(docId, attachmentName, [dbName])
+   * destroy(dbName, docId, attachmentName, rev, [dbName])
  * config
    * get(path)
    * set(path)
-   * setCompactionRule(dbName, rule)
+   * setCompactionRule(rule, [dbName])
    * setCouchDBMaxDBsOpen(maxDBsOpen)
    * setCouchHttpdAuthTimeout(timeoutSecs)
    * setCouchHttpdAuthAllowPersistentCookies(allow)
@@ -16,57 +16,58 @@
    * unsetIgnoreMissing(path)
  * db
    * all()
-   * [changes(dbName, params, filter)](https://github.com/redgeoff/slouch/blob/master/API.md#changesdbname-params-filter)
-   * [changesArray(dbName, params, filter)](https://github.com/redgeoff/slouch/blob/master/API.md#changesarraydbname-params-filter)
+   * [changes(params, filter, [dbName])](https://github.com/redgeoff/slouch/blob/master/API.md#changesdbname-params-filter)
+   * [changesArray(params, filter, [dbName])](https://github.com/redgeoff/slouch/blob/master/API.md#changesarraydbname-params-filter)
    * copy(fromDBName, toDBName)
    * create(dbName)
+   * use(dbName)
    * destroy(dbName)
    * exists(dbName)
    * replicate(params)
-   * get(dbName)
-   * view(dbName, viewDocId, view, params)
-   * viewArray(dbName, viewDocId, view, params)
+   * get([dbName])
+   * view(viewDocId, view, params, [dbName])
+   * viewArray(viewDocId, view, params, [dbName])
  * doc
-   * all(dbName, params)
-   * allArray(dbName, params)
-   * bulkCreateOrUpdate(dbName, docs)
-   * create(dbName, doc)
-   * createAndIgnoreConflict(dbName, doc)
-   * createOrUpdate(dbName, doc)
-   * createOrUpdateIgnoreConflict(dbName, doc)
-   * destroy(dbName, docId, docRev)
-   * destroyAll(dbName, keepDesignDocs)
-   * destroyAllNonDesign(dbName)
-   * destroyIgnoreConflict(dbName, docId, docRev)
-   * exists(dbName, id)
-   * [find(dbName, body, params)](https://github.com/redgeoff/slouch/blob/master/API.md#finddbname-body-params)
-   * get(dbName, docId)
-   * getAndDestroy(dbName, docId)
-   * getIgnoreMissing(dbName, id)
-   * getMergeCreateOrUpdate(dbName, doc)
-   * getMergeUpdate(dbName, doc)
-   * getMergeUpdateIgnoreConflict(dbName, doc)
-   * getMergeUpsert(dbName, doc)
-   * getModifyUpsert(dbName, docId, onGetPromiseFactory)
+   * all(params, [dbName])
+   * allArray(params, [dbName])
+   * bulkCreateOrUpdate(docs, [dbName])
+   * create(doc, [dbName])
+   * createAndIgnoreConflict(doc, [dbName])
+   * createOrUpdate(doc, [dbName])
+   * createOrUpdateIgnoreConflict(doc, [dbName])
+   * destroy(docId, docRev, [dbName])
+   * destroyAll(keepDesignDocs, [dbName])
+   * destroyAllNonDesign([dbName])
+   * destroyIgnoreConflict(docId, docRev, [dbName])
+   * exists(id, [dbName])
+   * [find(body, params, [dbName])](https://github.com/redgeoff/slouch/blob/master/API.md#finddbname-body-params)
+   * get(docId, [dbName])
+   * getAndDestroy(docId, [dbName])
+   * getIgnoreMissing(id, [dbName])
+   * getMergeCreateOrUpdate(doc, [dbName])
+   * getMergeUpdate(doc, [dbName])
+   * getMergeUpdateIgnoreConflict(doc, [dbName])
+   * getMergeUpsert(doc, [dbName])
+   * getModifyUpsert(docId, onGetPromiseFactory, [dbName])
    * ignoreConflict(promiseFactory)
    * ignoreMissing(promiseFactory)
    * isConflictError(err)
    * isMissingError(err)
-   * markAsDestroyed(dbName, docId)
+   * markAsDestroyed(docId, [dbName])
    * setDestroyed(doc)
    * update(dbName, doc)
-   * updateIgnoreConflict(dbName, doc)
-   * upsert(dbName, doc)
+   * updateIgnoreConflict(doc, [dbName])
+   * upsert(doc, [dbName])
  * ExcludeDesignDocIterator
  * membership
    * get()
  * NotAuthenticatedError
  * NotAuthorizedError
  * security
-   * get(dbName)
-   * onlyAdminCanView(dbName)
-   * onlyRoleCanView(dbName, role)
-   * set(dbName, security)
+   * get([dbName])
+   * onlyAdminCanView([dbName])
+   * onlyRoleCanView(role, [dbName])
+   * set(security, [dbName])
  * system
    * get()
    * isCouchDB1()
@@ -99,18 +100,36 @@
 
 ### DB
 
-#### changes(dbName, params, filter)
+#### changes(params, filter, [dbName])
 
 Returns a list of changes in the database. See https://docs.couchdb.org/en/stable/api/database/changes.html for more details.
 
 The function returns an iterator that indefinitely returns changes from the database.
 
-You can use an optional third argument to pass a selector for filtering the change feed.
+You can use an optional second argument to pass a selector for filtering the change feed.
 
 Example:
 
 ```js
-slouch.db.changes('myDB', {
+slouch.db.changes({
+  include_docs: true,
+  feed: 'continuous',
+  heartbeat: true
+}, {
+  selector: {
+    thing: 'findme'
+  }
+}, 'myDB');
+```
+
+You can use an optional third argument to pass a selector for filtering the change feed.
+
+Example without specifying the database name:
+
+```js
+slouch.db.use('myDB');
+
+slouch.db.changes({
   include_docs: true,
   feed: 'continuous',
   heartbeat: true
@@ -121,18 +140,18 @@ slouch.db.changes('myDB', {
 });
 ```
 
-#### changesArray(dbName, params, filter)
+#### changesArray(params, filter, [dbName])
 
 Returns a list of changes in the database. See https://docs.couchdb.org/en/stable/api/database/changes.html for more details.
 
 The function returns an array of changes from the database.
 
-You can use an optional third argument to pass a selector for filtering the change feed.
+You can use an optional second argument to pass a selector for filtering the change feed.
 
 Example:
 
 ```js
-slouch.db.changesArray('myDB', {
+slouch.db.changesArray({
   include_docs: true,
   feed: 'continuous',
   heartbeat: true
@@ -140,21 +159,21 @@ slouch.db.changesArray('myDB', {
   selector: {
     thing: 'findme'
   }
-});
+}, 'myDB');
 ```
 
 ### Doc
 
-#### find(dbName, body, params)
+#### find(body, params, [dbName])
 
 Find documents using a declarative JSON querying syntax. See https://docs.couchdb.org/en/latest/api/database/find.html for more details.
 
 Example:
 
 ```js
-slouch.doc.find('myDB', {
+slouch.doc.find({
   selector: {
     thing: 'findme'
   }
-});
+}, 'myDB');
 ```

@@ -6,7 +6,12 @@ var CouchPersistentStreamIterator = require('./couch-persistent-stream-iterator'
 var DB = function (slouch) {
   this._slouch = slouch;
 };
-
+DB.prototype.use = function (dbName) {
+  let children = [ 'attachment','config', 'db', 'doc', 'security']
+  children.map( (x) => {
+    this._slouch[x]._dbName = dbName
+  })
+};
 DB.prototype._create = function (dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName),
@@ -37,7 +42,7 @@ DB.prototype.destroy = function (dbName) {
   });
 };
 
-DB.prototype.get = function (dbName) {
+DB.prototype.get = function (dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName),
     method: 'GET',
@@ -63,7 +68,7 @@ DB.prototype._setSince = function (opts, lastSeq) {
 };
 
 // Use a JSONStream so that we don't have to load a large JSON structure into memory
-DB.prototype.changes = function (dbName, params, filter) {
+DB.prototype.changes = function (params, filter, dbName = this._dbName) {
 
   var self = this,
     indefinite = false,
@@ -116,7 +121,7 @@ DB.prototype.changes = function (dbName, params, filter) {
 
 };
 
-DB.prototype.changesArray = function (dbName, params, filter) {
+DB.prototype.changesArray = function (params, filter, dbName = this._dbName) {
   // When a filter object is provided use the key to set the filter query param
   // Supported filters include doc_ids or selector
   if (filter && Object.keys(filter).length === 1) {
@@ -132,7 +137,7 @@ DB.prototype.changesArray = function (dbName, params, filter) {
   });
 };
 
-DB.prototype.view = function (dbName, viewDocId, view, params) {
+DB.prototype.view = function (viewDocId, view, params, dbName = this._dbName) {
   var encodedViewDocId = '_design/' + encodeURIComponent(viewDocId.substr(8));
   return new CouchPersistentStreamIterator({
     url: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodedViewDocId +
@@ -142,7 +147,7 @@ DB.prototype.view = function (dbName, viewDocId, view, params) {
   }, 'rows.*');
 };
 
-DB.prototype.viewArray = function (dbName, viewDocId, view, params) {
+DB.prototype.viewArray = function (viewDocId, view, params, dbName = this._dbName) {
   var encodedViewDocId = '_design/' + encodeURIComponent(viewDocId.substr(8));
   return this._slouch._req({
     url: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodedViewDocId +

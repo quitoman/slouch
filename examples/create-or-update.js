@@ -7,12 +7,12 @@ var slouch = new Slouch('http://admin:admin@localhost:5984');
 slouch.db.create('mydb').then(function () {
 
   // Create a doc
-  return slouch.doc.createOrUpdate('mydb', { _id: '1', foo: 'bar' });
+  return slouch.doc.createOrUpdate({ _id: '1', foo: 'bar' }, 'mydb');
 
 }).then(function (doc) {
 
   // Update the doc
-  return slouch.doc.createOrUpdate('mydb', { _id: '1', foo: 'yar' });
+  return slouch.doc.createOrUpdate({ _id: '1', foo: 'yar' }, 'mydb');
 
 }).then(function () {
 

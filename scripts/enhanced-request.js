@@ -54,7 +54,6 @@ EnhancedRequest.prototype._getStatusCode = function (body) {
   case 'not_found':
     return 404;
   }
-  console.log(body) //fork
   if (body.reason && body.reason.indexOf('Could not open source database') !== -1) {
     return 404;
   }

@@ -103,7 +103,7 @@ Config.prototype.setLogLevel = function (level) {
   return this.set('log/level', level);
 };
 
-Config.prototype.setCompactionRule = function (dbName, rule) {
+Config.prototype.setCompactionRule = function (rule, dbName = this._dbname) {
   return this.set('compactions/' + dbName, rule);
 };
 

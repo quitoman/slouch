@@ -30,7 +30,7 @@ slouch.user.logIn(adminUsername, adminPassword).then(function () {
 }).then(function () {
 
   // Set the security so that only the nonAdminUsername can edit this DB
-  return slouch.security.onlyRoleCanView(dbName, role);
+  return slouch.security.onlyRoleCanView(role, dbName);
 
 }).then(function () {
 
@@ -45,12 +45,12 @@ slouch.user.logIn(adminUsername, adminPassword).then(function () {
 }).then(function () {
 
   // Create a doc
-  return slouch.doc.create(dbName, { _id: '1', foo: 'bar' });
+  return slouch.doc.create({ _id: '1', foo: 'bar' }, dbName);
 
 }).then(function (doc) {
 
   // Update the doc
-  return slouch.doc.upsert(dbName, { _id: '1', foo: 'yar' });
+  return slouch.doc.upsert({ _id: '1', foo: 'yar' }, dbName);
 
 }).then(function () {
 

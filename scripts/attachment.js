@@ -28,7 +28,7 @@ var Attachment = function (slouch) {
 //   });
 // };
 
-Attachment.prototype.get = function (dbName, docId, attachmentName) {
+Attachment.prototype.get = function (docId, attachmentName, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodeURIComponent(
       docId) + '/' + encodeURIComponent(attachmentName),
@@ -40,7 +40,7 @@ Attachment.prototype.get = function (dbName, docId, attachmentName) {
   });
 };
 
-Attachment.prototype.destroy = function (dbName, docId, attachmentName, rev) {
+Attachment.prototype.destroy = function (docId, attachmentName, rev, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodeURIComponent(
       docId) + '/' + encodeURIComponent(attachmentName),

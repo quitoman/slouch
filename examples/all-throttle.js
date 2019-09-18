@@ -10,16 +10,16 @@ var throttler = new Throttler(5);
 slouch.db.create('mydb').then(function () {
 
   // Create a doc
-  return slouch.doc.create('mydb', { foo: 'bar' });
+  return slouch.doc.create({ foo: 'bar' }, 'mydb');
 
 }).then(function () {
 
   // Create another doc
-  return slouch.doc.create('mydb', { foo: 'nar' });
+  return slouch.doc.create({ foo: 'nar' }, 'mydb');
 
 }).then(function () {
 
-  return slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
+  return slouch.doc.all({ include_docs: true }, 'mydb').each(function (item) {
 
     return Promise.resolve('foo => ' + item.foo);
 

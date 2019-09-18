@@ -7,22 +7,22 @@ var slouch = new Slouch('http://admin:admin@localhost:5984');
 slouch.db.create('mydb').then(function () {
 
   // Create a doc
-  return slouch.doc.create('mydb', { foo: 'bar' });
+  return slouch.doc.create({ foo: 'bar' }, 'mydb');
 
 }).then(function (doc) {
 
   // Update the doc
-  return slouch.doc.update('mydb', { _id: doc.id, _rev: doc.rev, foo: 'yar' });
+  return slouch.doc.update({ _id: doc.id, _rev: doc.rev, foo: 'yar' }, 'mydb');
 
 }).then(function (doc) {
 
   // Get the doc
-  return slouch.doc.get('mydb', doc._id);
+  return slouch.doc.get(doc._id, 'mydb');
 
 }).then(function (doc) {
 
   // Destroy the doc
-  return slouch.doc.destroy('mydb', doc._id, doc._rev);
+  return slouch.doc.destroy(doc._id, doc._rev, 'mydb');
 
 }).then(function () {
 

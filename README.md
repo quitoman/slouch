@@ -17,6 +17,10 @@ A JS API for CouchDB that does the heavy lifting
   - Support for optionally ignoring conflicts, missing docs, etc...
   - Designed for both CouchDB 1 and CouchDB 2
 
+## About this fork
+
+The only difference from the original repository is that the database name argument is the last argument now, and it is optional too.
+
 
 ## Table of Contents
 

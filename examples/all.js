@@ -7,16 +7,16 @@ var slouch = new Slouch('http://admin:admin@localhost:5984');
 slouch.db.create('mydb').then(function () {
 
   // Create a doc
-  return slouch.doc.create('mydb', { foo: 'bar' });
+  return slouch.doc.create({ foo: 'bar' }, 'mydb');
 
 }).then(function () {
 
   // Create another doc
-  return slouch.doc.create('mydb', { foo: 'nar' });
+  return slouch.doc.create({ foo: 'nar' }, 'mydb');
 
 }).then(function () {
 
-  return slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
+  return slouch.doc.all({ include_docs: true }, 'mydb').each(function (item) {
 
     // If we return a promise then the all() iterator won't move on to the next item until the
     // promise resolves. This allows us to process a iterate through a large number of docs without

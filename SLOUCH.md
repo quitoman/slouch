@@ -15,7 +15,7 @@ StreamIterators work with promises and reduce your code by introducing a simple 
 ### Example 1 - Sequentially process all docs in a DB
 
 ```js
-slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
+slouch.doc.all({ include_docs: true }, 'mydb').each(function (item) {
 
   // If we return a promise then the all() iterator won't move on to the next item
   // until the promise resolves. This allows us to iterate through a large number
@@ -42,7 +42,7 @@ slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
 var Throttler = require('squadron').Throttler;
 var throttler = new Throttler(5);
 
-slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
+slouch.doc.all({ include_docs: true }, 'mydb').each(function (item) {
 
   return Promise.resolve('foo => ' + item.foo);
 
@@ -59,7 +59,7 @@ slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
 Note: you should probably try to avoid this route unless your processing routine is incredibly fast. Otherwise, the number of promises you spawn will be unbounded and you will run out of memory as you'll be reading docs faster than you can process them.
 
 ```js
-slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
+slouch.doc.all({ include_docs: true }, 'mydb').each(function (item) {
 
   // Note: a promise is not returned here
   console.log('foo => ' + item.foo);
@@ -76,8 +76,8 @@ slouch.doc.all('mydb', { include_docs: true }).each(function (item) {
 `db.changes()`, `db.view()` and `system.updates()` support the feed=continuous option which causes the iterator  to loop indefinitely. These iterators are of the type PersistentStreamIterator, which means that the iterator will automatically reconnect, following an exponential backoff, in the event that a connection to the database is lost.
 
 ```js
-var iterator = slouch.db.changes('mydb',
-    { include_docs: true, feed: 'continuous' });
+var iterator = slouch.db.changes(
+    { include_docs: true, feed: 'continuous' }, 'mydb');
 
 iterator.each(function (item) {
 
@@ -87,6 +87,22 @@ iterator.each(function (item) {
 ```
 
 you can then abort this loop with `iterator.abort()`
+
+### Example 5 - Choose a DB to use.
+
+```js
+slouch.db.use('mydb')
+var iterator = slouch.db.changes(
+    { include_docs: true, feed: 'continuous' });
+
+iterator.each(function (item) {
+
+  return Promise.resolve('foo => ' + item.foo);
+
+});
+```
+
+you can omit the database name argument.
 
 
 ## Helper functions
@@ -99,10 +115,10 @@ Sometimes you just want to use the same function to create or update a doc:
 
 ```js
 // Create a doc
-slouch.doc.createOrUpdate('mydb', { _id: '1', foo: 'bar' }).then(function (doc) {
+slouch.doc.createOrUpdate({ _id: '1', foo: 'bar' }, 'mydb').then(function (doc) {
 
   // Update the doc
-  return slouch.doc.createOrUpdate('mydb', { _id: '1', foo: 'yar' });
+  return slouch.doc.createOrUpdate({ _id: '1', foo: 'yar' }, 'mydb');
 
 });
 ```
@@ -112,7 +128,7 @@ slouch.doc.createOrUpdate('mydb', { _id: '1', foo: 'bar' }).then(function (doc) 
 And Sometimes you just want to force a creation or update even if there is a conflict:
 
 ```js
-slouch.doc.upsert('mydb', { _id: '1', foo: 'bar' });
+slouch.doc.upsert({ _id: '1', foo: 'bar' }, 'mydb');
 ```
 
 ### getMergeUpsert
@@ -121,10 +137,10 @@ getMergeUpsert allows you to make partial updates without regard to conflicts
 
 ```js
 // Create a doc
-slouch.doc.create('mydb', { _id: '1', foo: 'bar' }).then(function (doc) {
+slouch.doc.create({ _id: '1', foo: 'bar' }, 'mydb').then(function (doc) {
 
   // Add the `yar` attr to the doc and persist through any conflicts
-  return slouch.doc.getMergeUpsert('mydb', { _id: '1', yar: 'nar' });
+  return slouch.doc.getMergeUpsert({ _id: '1', yar: 'nar' }, 'mydb');
 
 });
 ```
@@ -135,7 +151,7 @@ getModifyUpsert allows you to make partial updates via a callback
 
 ```js
 // Create a doc
-slouch.doc.create('mydb', { _id: '1', foo: 'bar' }).then(function (doc) {
+slouch.doc.create({ _id: '1', foo: 'bar' }, 'mydb').then(function (doc) {
 
   // Add the `yar` attr to the doc via a callback and persist through any conflicts
   return slouch.doc.getModifyUpsert('mydb', '1', function (doc) {

@@ -15,7 +15,7 @@ var Security = function (slouch) {
 //      "roles" : ["producer", "consumer"]
 //    }
 // }
-Security.prototype.set = function (dbName, security) {
+Security.prototype.set = function (security, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/_security',
     method: 'PUT',
@@ -31,7 +31,7 @@ Security.prototype.get = function (dbName) {
   });
 };
 
-Security.prototype.onlyRoleCanView = function (dbName, role) {
+Security.prototype.onlyRoleCanView = function (role, dbName = this._dbName) {
   return this.set(dbName, {
     admins: {
       names: ['_admin'],
@@ -44,7 +44,7 @@ Security.prototype.onlyRoleCanView = function (dbName, role) {
   });
 };
 
-Security.prototype.onlyUserCanView = function (dbName, user) {
+Security.prototype.onlyUserCanView = function (user, dbName = this._dbName) {
   return this.set(dbName, {
     admins: {
       names: ['_admin'],
@@ -57,7 +57,7 @@ Security.prototype.onlyUserCanView = function (dbName, user) {
   });
 };
 
-Security.prototype.onlyAdminCanView = function (dbName) {
+Security.prototype.onlyAdminCanView = function (dbName = this._dbName) {
   return this.onlyRoleCanView(dbName, '_admin');
 };
 

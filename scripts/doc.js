@@ -46,7 +46,7 @@ Doc.prototype.ignoreMissing = function (promiseFactory) {
   });
 };
 
-Doc.prototype.create = function (dbName, doc) {
+Doc.prototype.create = function (doc, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName),
     method: 'POST',
@@ -56,14 +56,14 @@ Doc.prototype.create = function (dbName, doc) {
   });
 };
 
-Doc.prototype.createAndIgnoreConflict = function (dbName, doc) {
+Doc.prototype.createAndIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
     return self.create(dbName, doc);
   });
 };
 
-Doc.prototype.update = function (dbName, doc) {
+Doc.prototype.update = function (doc, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodeURIComponent(doc._id),
     method: 'PUT',
@@ -78,14 +78,14 @@ Doc.prototype.update = function (dbName, doc) {
   });
 };
 
-Doc.prototype.updateIgnoreConflict = function (dbName, doc) {
+Doc.prototype.updateIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
     return self.update(dbName, doc);
   });
 };
 
-Doc.prototype.get = function (dbName, docId, params) {
+Doc.prototype.get = function (docId, params, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodeURIComponent(
       docId),
@@ -95,14 +95,14 @@ Doc.prototype.get = function (dbName, docId, params) {
   });
 };
 
-Doc.prototype.getIgnoreMissing = function (dbName, id) {
+Doc.prototype.getIgnoreMissing = function (id, dbName = this._dbName) {
   var self = this;
   return self.ignoreMissing(function () {
     return self.get(dbName, id);
   });
 };
 
-Doc.prototype.exists = function (dbName, id) {
+Doc.prototype.exists = function (id, dbName = this._dbName) {
   return this.get(dbName, id).then(function () {
     return true;
   }).catch(function () {
@@ -121,7 +121,7 @@ Doc.prototype._eqls = function (doc1, doc2) {
   return sporks.isEqual(clonedDoc1, clonedDoc2);
 };
 
-Doc.prototype.updateOrIgnore = function (dbName, curDoc, newDoc) {
+Doc.prototype.updateOrIgnore = function (curDoc, newDoc, dbName = this._dbName) {
   // Wrap in promise so that errors are handled properly and always returns promise, even when the
   // docs are the same
   var self = this;
@@ -140,7 +140,7 @@ Doc.prototype.updateOrIgnore = function (dbName, curDoc, newDoc) {
   });
 };
 
-Doc.prototype.createOrUpdate = function (dbName, doc) {
+Doc.prototype.createOrUpdate = function (doc, dbName = this._dbName) {
 
   var self = this,
     clonedDoc = sporks.clone(doc);
@@ -169,7 +169,7 @@ Doc.prototype.createOrUpdate = function (dbName, doc) {
   });
 };
 
-Doc.prototype.createOrUpdateIgnoreConflict = function (dbName, doc) {
+Doc.prototype.createOrUpdateIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
     return self.createOrUpdate(dbName, doc);
@@ -210,14 +210,14 @@ Doc.prototype._persistThroughConflicts = function (promiseFactory) {
   return run();
 };
 
-Doc.prototype.upsert = function (dbName, doc) {
+Doc.prototype.upsert = function (doc, dbName = this._dbName) {
   var self = this;
   return self._persistThroughConflicts(function () {
     return self.createOrUpdate(dbName, doc);
   });
 };
 
-Doc.prototype.getMergeUpdate = function (dbName, doc) {
+Doc.prototype.getMergeUpdate = function (doc, dbName = this._dbName) {
 
   var self = this;
 
@@ -232,7 +232,7 @@ Doc.prototype.getMergeUpdate = function (dbName, doc) {
   });
 };
 
-Doc.prototype.getMergeCreateOrUpdate = function (dbName, doc) {
+Doc.prototype.getMergeCreateOrUpdate = function (doc, dbName = this._dbName) {
 
   var self = this;
 
@@ -252,21 +252,21 @@ Doc.prototype.getMergeCreateOrUpdate = function (dbName, doc) {
   });
 };
 
-Doc.prototype.getMergeUpdateIgnoreConflict = function (dbName, doc) {
+Doc.prototype.getMergeUpdateIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
     return self.getMergeUpdate(dbName, doc);
   });
 };
 
-Doc.prototype.getMergeUpsert = function (dbName, doc) {
+Doc.prototype.getMergeUpsert = function (doc, dbName = this._dbName) {
   var self = this;
   return self._persistThroughConflicts(function () {
     return self.getMergeCreateOrUpdate(dbName, doc);
   });
 };
 
-Doc.prototype.getModifyUpsert = function (dbName, docId, onGetPromiseFactory) {
+Doc.prototype.getModifyUpsert = function (docId, onGetPromiseFactory, dbName = this._dbName) {
   var self = this;
   return self._persistThroughConflicts(function () {
     return self.get(dbName, docId).then(function (doc) {
@@ -280,7 +280,7 @@ Doc.prototype.getModifyUpsert = function (dbName, docId, onGetPromiseFactory) {
   });
 };
 
-Doc.prototype.allArray = function (dbName, params) {
+Doc.prototype.allArray = function (params, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/_all_docs',
     method: 'GET',
@@ -290,7 +290,7 @@ Doc.prototype.allArray = function (dbName, params) {
 };
 
 // Use a JSONStream so that we don't have to load a large JSON structure into memory
-Doc.prototype.all = function (dbName, params) {
+Doc.prototype.all = function (params, dbName = this._dbName) {
   return new CouchPersistentStreamIterator({
     url: this._slouch._url + '/' + encodeURIComponent(dbName) + '/_all_docs',
     method: 'GET',
@@ -298,7 +298,7 @@ Doc.prototype.all = function (dbName, params) {
   }, 'rows.*', null, this._slouch._request);
 };
 
-Doc.prototype.find = function (dbName, body, params) {
+Doc.prototype.find = function (body, params, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/_find',
     method: 'POST',
@@ -308,11 +308,11 @@ Doc.prototype.find = function (dbName, body, params) {
   });
 };
 
-Doc.prototype.destroyAllNonDesign = function (dbName) {
+Doc.prototype.destroyAllNonDesign = function (dbName = this._dbName) {
   return this.destroyAll(dbName, true);
 };
 
-Doc.prototype.destroyAll = function (dbName, keepDesignDocs) {
+Doc.prototype.destroyAll = function (keepDesignDocs, dbName = this._dbName) {
   var self = this;
 
   return self.all(dbName).each(function (doc) {
@@ -322,7 +322,7 @@ Doc.prototype.destroyAll = function (dbName, keepDesignDocs) {
   });
 };
 
-Doc.prototype.destroy = function (dbName, docId, docRev) {
+Doc.prototype.destroy = function (docId, docRev, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodeURIComponent(
       docId),
@@ -334,21 +334,21 @@ Doc.prototype.destroy = function (dbName, docId, docRev) {
   });
 };
 
-Doc.prototype.destroyIgnoreConflict = function (dbName, docId, docRev) {
+Doc.prototype.destroyIgnoreConflict = function (docId, docRev, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
     return self.destroy(dbName, docId, docRev);
   });
 };
 
-Doc.prototype.getAndDestroy = function (dbName, docId) {
+Doc.prototype.getAndDestroy = function (docId, dbName = this._dbName) {
   var self = this;
   return self.get(dbName, docId).then(function (doc) {
     return self.destroy(dbName, docId, doc._rev);
   });
 };
 
-Doc.prototype.markAsDestroyed = function (dbName, docId) {
+Doc.prototype.markAsDestroyed = function (docId, dbName = this._dbName) {
   return this.getMergeUpdate(dbName, {
     _id: docId,
     _deleted: true
@@ -360,7 +360,7 @@ Doc.prototype.setDestroyed = function (doc) {
   doc._deleted = true;
 };
 
-Doc.prototype.bulkCreateOrUpdate = function (dbName, docs) {
+Doc.prototype.bulkCreateOrUpdate = function (docs, dbName = this._dbName) {
   return this._slouch._req({
     uri: this._slouch._url + '/' + encodeURIComponent(dbName) + '/_bulk_docs',
     method: 'POST',
