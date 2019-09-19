@@ -3,7 +3,7 @@
 var NotAuthorizedError = function (message) {
   this.name = 'NotAuthorizedError';
   this.message = message;
-  this.statusCode = 401 //fork
+  this.statusCode = 401;
 };
 
 NotAuthorizedError.prototype = Object.create(Error.prototype);

@@ -20,7 +20,7 @@ User.prototype.toUsername = function (userId) {
 
 User.prototype._insert = function (username, user) {
   user._id = this.toUserId(username);
-  return this._slouch.doc.update(this._dbName, user);
+  return this._slouch.doc.update(user, this._dbName);
 };
 
 User.prototype.create = function (username, password, roles, metadata) {
@@ -37,7 +37,7 @@ User.prototype.create = function (username, password, roles, metadata) {
 };
 
 User.prototype.get = function (username, params) {
-  return this._slouch.doc.get(this._dbName, this.toUserId(username), params);
+  return this._slouch.doc.get(this.toUserId(username), params, this._dbName);
 };
 
 User.prototype._update = function (username, user) {
@@ -91,7 +91,7 @@ User.prototype.setMetadata = function (username, metadata) {
 };
 
 User.prototype._destroy = function (username, rev) {
-  return this._slouch.doc.destroy(this._dbName, this.toUserId(username), rev);
+  return this._slouch.doc.destroy(this.toUserId(username), rev, this._dbName);
 };
 
 User.prototype.destroy = function (username) {

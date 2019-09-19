@@ -59,7 +59,7 @@ Doc.prototype.create = function (doc, dbName = this._dbName) {
 Doc.prototype.createAndIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
-    return self.create(dbName, doc);
+    return self.create(doc, dbName);
   });
 };
 
@@ -81,7 +81,7 @@ Doc.prototype.update = function (doc, dbName = this._dbName) {
 Doc.prototype.updateIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
-    return self.update(dbName, doc);
+    return self.update(doc, dbName);
   });
 };
 
@@ -98,12 +98,12 @@ Doc.prototype.get = function (docId, params, dbName = this._dbName) {
 Doc.prototype.getIgnoreMissing = function (id, dbName = this._dbName) {
   var self = this;
   return self.ignoreMissing(function () {
-    return self.get(dbName, id);
+    return self.get(id, dbName);
   });
 };
 
 Doc.prototype.exists = function (id, dbName = this._dbName) {
-  return this.get(dbName, id).then(function () {
+  return this.get(id, dbName).then(function () {
     return true;
   }).catch(function () {
     return false;
@@ -134,7 +134,7 @@ Doc.prototype.updateOrIgnore = function (curDoc, newDoc, dbName = this._dbName) 
 
     } else {
 
-      return self.update(dbName, newDoc);
+      return self.update(newDoc, dbName);
 
     }
   });
@@ -145,19 +145,19 @@ Doc.prototype.createOrUpdate = function (doc, dbName = this._dbName) {
   var self = this,
     clonedDoc = sporks.clone(doc);
 
-  return self.get(dbName, doc._id).then(function (_doc) {
+  return self.get(doc._id, dbName).then(function (_doc) {
 
     // Use the latest rev so that we can attempt to update the doc without a conflict
     clonedDoc._rev = _doc._rev;
 
-    return self.updateOrIgnore(dbName, _doc, clonedDoc);
+    return self.updateOrIgnore(_doc, clonedDoc, dbName);
 
   }).catch(function (err) {
 
     if (self.isMissingError(err)) { // missing? This can be expected on the first update
 
       // The doc is missing so we attempt to create the doc w/o a rev number
-      return self.create(dbName, doc);
+      return self.create(doc, dbName);
 
     } else {
 
@@ -172,7 +172,7 @@ Doc.prototype.createOrUpdate = function (doc, dbName = this._dbName) {
 Doc.prototype.createOrUpdateIgnoreConflict = function (doc, dbName = this._dbName) {
   var self = this;
   return self.ignoreConflict(function () {
-    return self.createOrUpdate(dbName, doc);
+    return self.createOrUpdate(doc, dbName);
   });
 };
 

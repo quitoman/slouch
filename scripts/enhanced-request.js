@@ -58,7 +58,7 @@ EnhancedRequest.prototype._getStatusCode = function (body) {
     return 404;
   }
 };
-EnhancedRequest.prototype._getReason = function (body) { //fork
+EnhancedRequest.prototype._getReason = function (body) { 
   if (body.reason) {
     return body.reason;
   }
@@ -89,7 +89,7 @@ EnhancedRequest.prototype._newError = function (body, args) {
   }
   err.statusCode = this._getStatusCode(body);
   err.error = body.error;
-  err.reason = this._getReason(body); //fork
+  err.reason = this._getReason(body);
   return err;
 };
 
