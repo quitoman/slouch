@@ -26,7 +26,7 @@ The only difference from the original repository is that the database name argum
 
 * [Getting Started](GETTING-STARTED.md)
 * [Don't just relax. Slouch!](SLOUCH.md)
-* [Examples](https://github.com/redgeoff/slouch/tree/master/examples)
+* [Examples](https://github.com/quitoman/slouch/tree/master/examples)
 * [Reference](API.md)
 * [Don’t Just Relax; Slouch: A JS Client for CouchDB that Does the Heavy Lifting](https://medium.com/@redgeoff/dont-just-relax-slouch-a-js-client-for-couchdb-that-does-the-heavy-lifting-d8232eba8e2c)
 
