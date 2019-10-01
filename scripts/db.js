@@ -138,7 +138,7 @@ DB.prototype.changesArray = function (params, filter, dbName = this._dbName) {
 };
 
 DB.prototype.view = function (viewDocId, view, params, dbName = this._dbName) {
-  var encodedViewDocId = '_design/' + encodeURIComponent(viewDocId.substr(8));
+  var encodedViewDocId = '_design/' + encodeURIComponent(viewDocId);
   return new CouchPersistentStreamIterator({
     url: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodedViewDocId +
       '/_view/' +
@@ -148,7 +148,7 @@ DB.prototype.view = function (viewDocId, view, params, dbName = this._dbName) {
 };
 
 DB.prototype.viewArray = function (viewDocId, view, params, dbName = this._dbName) {
-  var encodedViewDocId = '_design/' + encodeURIComponent(viewDocId.substr(8));
+  var encodedViewDocId = '_design/' + encodeURIComponent(viewDocId);
   return this._slouch._req({
     url: this._slouch._url + '/' + encodeURIComponent(dbName) + '/' + encodedViewDocId +
       '/_view/' +
